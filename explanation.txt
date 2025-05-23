@@ -1,0 +1,82 @@
+1. Importing Required Libraries:
+
+This block imports all necessary Python libraries for building and training the deep learning model.
+ResNet50 is a pre-trained model that will be used as a base for transfer learning.
+ImageDataGenerator helps in preprocessing and augmenting image datasets.
+Dense, Flatten, Dropout are layers used to modify the model architecture.
+ModelCheckpoint and EarlyStopping are used to save the best model and stop training early if accuracy doesn't improve.
+matplotlib and seaborn are used for visualization.
+confusion_matrix helps in evaluating the model's performance.
+
+2. Defining Image Dimensions:
+
+This block sets the dimensions for input images.
+The model will resize all images to 300x300 pixels before training.
+
+3. Loading Pretrained ResNet50 Model:
+
+This block loads the ResNet50 model pre-trained on the ImageNet dataset.
+include_top=False removes the fully connected layers so that we can add our custom classification layers.
+input_shape=(height, width, 3) specifies the input image size with 3 color channels (RGB).
+
+4. Defining Dataset Directories:
+
+Specifies the directory paths for training, validation, and testing images.
+These directories should contain subfolders representing different classes (e.g., "Real" and "Fake").
+
+5. Defining Batch Size:
+
+Defines the number of images that will be processed at a time during training.
+Smaller batch sizes use less memory, but larger batch sizes improve model stability.
+
+6. Creating Data Generators with Augmentation:
+
+Creates an ImageDataGenerator instance to preprocess and augment images before feeding them to the model.
+preprocess_input: Normalizes images for ResNet50.
+rotation_range=90: Randomly rotates images up to 90 degrees.
+width_shift_range and height_shift_range: Moves the image randomly along X and Y axes.
+shear_range=0.2: Applies shearing transformations.
+zoom_range=0.2: Zooms in or out on images randomly.
+horizontal_flip=True: Flips images horizontally to increase variability.
+fill_mode='nearest': Fills missing pixels after transformation.
+flow_from_directory: Loads images from the train_dir and applies augmentation.
+
+7. Creating Validation Data Generator:
+
+Creates a validation data generator without augmentation.
+Only applies preprocess_input to normalize images.
+flow_from_directory loads validation images from validation_dir.
+
+8. Function to Check Dataset Structure:
+
+This function checks if dataset folders (Training, Validation, Testing) exist.
+It also verifies whether "Real" and "Fake" image classes exist inside these folders.
+Returns a dictionary with image counts or error messages.
+
+9. Building Fine-tuned ResNet50 Model:
+
+Builds a custom classification head on top of the pre-trained ResNet50 model.
+Freezes the pre-trained layers so they don't change during training.
+Adds:
+Flatten(): Converts feature maps into a single vector.
+Fully connected (Dense) layers with ReLU activation.
+Dropout to prevent overfitting.
+Output layer with softmax activation for multi-class classification.
+
+10. Defining Model Parameters:
+
+Defines the labels for classification.
+Uses two fully connected layers (1024 neurons each).
+dropout=0.5 prevents overfitting.
+
+11. Training the Model:
+
+Trains the model using train_generator.
+Runs for num_epochs epochs.
+Uses validation data to check accuracy.
+Includes checkpoint to save the best model and early_stopping to stop training if accuracy stops improving.
+
+12. Evaluating the Model:
+
+Runs model evaluation using a confusion matrix.
+evaluate_model() function computes predictions and compares them with actual labels.
